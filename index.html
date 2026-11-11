@@ -110,14 +110,16 @@
             align-items: center;
             margin-bottom: 15px;
         }
+        /* Chhota sleek back button */
         .btn-back-small {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            margin-bottom: 0;
-            background: #f0f0f0;
-            color: #111;
-            border-radius: 6px;
+            width: auto !important;
+            padding: 5px 10px !important;
+            font-size: 0.8rem !important;
+            margin-bottom: 0 !important;
+            background: #f0f0f0 !important;
+            color: #111 !important;
+            border-radius: 6px !important;
+            border: 1px solid #ddd !important;
         }
         .scoreboard-item {
             display: flex;
@@ -154,7 +156,7 @@
             <div class="avatar-option" data-avatar="🦄">🦄</div>
         </div>
 
-        <button id="btn-join">Join Quiz</button>
+        <button id="btn-join-screen">Join Quiz Room</button>
         <button id="btn-create-nav" class="btn-secondary">Host / Create Quiz</button>
     </div>
 
@@ -162,7 +164,7 @@
     <div id="screen-creator" class="hidden">
         <div class="header-flex">
             <h2>Create Quiz</h2>
-            <button class="btn-back-small" id="btn-back-home">Back</button>
+            <button class="btn-back-small btn-back-home">Back</button>
         </div>
         <input type="text" id="quiz-title" placeholder="Quiz Title">
         <div id="questions-container"></div>
@@ -170,21 +172,25 @@
         <button id="btn-publish">Publish Quiz</button>
     </div>
 
-    <!-- Join Screen -->
+    <!-- Join Code Screen -->
     <div id="screen-join-code" class="hidden">
         <div class="header-flex">
             <h2>Join Room</h2>
-            <button class="btn-back-small" id="btn-back-home-2">Back</button>
+            <button class="btn-back-small btn-back-home">Back</button>
         </div>
-        <input type="text" id="room-code-input" placeholder="Enter Host Code">
-        <button id="btn-connect-host">Connect</button>
+        <input type="text" id="room-code-input" placeholder="Enter Host Room Code">
+        <button id="btn-connect-host">Connect to Room</button>
     </div>
 
     <!-- Lobby Screen -->
     <div id="screen-lobby" class="hidden">
-        <h2>Waiting for Host...</h2>
-        <p id="room-code-display" style="margin-bottom: 12px; font-weight: bold;"></p>
-        <div id="player-list" style="margin-bottom: 15px; max-height: 150px; overflow-y: auto;"></div>
+        <div class="header-flex">
+            <h2>Lobby - Members</h2>
+            <button class="btn-back-small btn-back-home">Leave</button>
+        </div>
+        <p id="room-code-display" style="margin-bottom: 12px; font-weight: bold; font-size: 0.9rem; color: #555;"></p>
+        <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">Connected Players:</p>
+        <div id="player-list" style="margin-bottom: 15px; max-height: 180px; overflow-y: auto;"></div>
         <button id="btn-start-quiz" class="hidden">Start Quiz</button>
     </div>
 
@@ -192,7 +198,6 @@
     <div id="screen-quiz" class="hidden">
         <div class="header-flex">
             <span id="question-counter" style="font-weight: 600; font-size: 0.9rem;"></span>
-            <span id="timer" style="font-weight: bold; color: #d9534f;"></span>
         </div>
         <h3 id="question-text"></h3>
         <div id="options-container"></div>
@@ -225,23 +230,33 @@
         });
     });
 
-    // Navigation Back buttons
-    document.getElementById('btn-back-home').addEventListener('click', () => {
-        document.getElementById('screen-creator').classList.add('hidden');
-        document.getElementById('screen-home').classList.remove('hidden');
+    // Back to Home buttons
+    document.querySelectorAll('.btn-back-home').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('screen-creator').classList.add('hidden');
+            document.getElementById('screen-join-code').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('hidden');
+            if(peer) { peer.destroy(); peer = null; }
+            connections = [];
+        });
     });
 
-    document.getElementById('btn-back-home-2').addEventListener('click', () => {
-        document.getElementById('screen-join-code').classList.add('hidden');
-        document.getElementById('screen-home').classList.remove('hidden');
-    });
-
+    // Navigation to Create Quiz
     document.getElementById('btn-create-nav').addEventListener('click', () => {
         myName = document.getElementById('username').value.trim();
         if(!myName) { alert('Please enter your name first'); return; }
         document.getElementById('screen-home').classList.add('hidden');
         document.getElementById('screen-creator').classList.remove('hidden');
         if(document.getElementById('questions-container').children.length === 0) addQuestionField();
+    });
+
+    // Navigation to Join Code Screen
+    document.getElementById('btn-join-screen').addEventListener('click', () => {
+        myName = document.getElementById('username').value.trim();
+        if(!myName) { alert('Please enter your name first'); return; }
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-join-code').classList.remove('hidden');
     });
 
     // Add Question fields dynamically
@@ -295,8 +310,10 @@
         peer.on('open', (id) => {
             document.getElementById('screen-creator').classList.add('hidden');
             document.getElementById('screen-lobby').classList.remove('hidden');
-            document.getElementById('room-code-display').innerText = `Room Code: ${id}`;
+            document.getElementById('room-code-display').innerText = `Your Room Code: ${id}`;
             document.getElementById('btn-start-quiz').classList.remove('hidden');
+            
+            scores = {};
             scores[`${selectedAvatar} ${myName}`] = 0;
             updatePlayerList();
         });
@@ -311,26 +328,22 @@
         const list = document.getElementById('player-list');
         list.innerHTML = '';
         Object.keys(scores).forEach(p => {
-            list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Joined</span></div>`;
+            list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span style="color: green; font-size: 0.85rem;">Joined</span></div>`;
         });
     }
 
     function broadcast(data) {
-        connections.forEach(c => c.send(data));
+        connections.forEach(c => {
+            if(c && c.open) c.send(data);
+        });
     }
 
-    // Join flow setup
-    document.getElementById('btn-join').addEventListener('click', () => {
-        myName = document.getElementById('username').value.trim();
-        if(!myName) { alert('Please enter your name'); return; }
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-join-code').classList.remove('hidden');
-    });
-
+    // Connect to Host as a Member
     document.getElementById('btn-connect-host').addEventListener('click', () => {
         const hostId = document.getElementById('room-code-input').value.trim();
         if(!hostId) { alert('Enter room code'); return; }
 
+        isHost = false;
         peer = new Peer();
         peer.on('open', () => {
             conn = peer.connect(hostId);
@@ -365,24 +378,16 @@
     // Start Quiz (Host)
     document.getElementById('btn-start-quiz').addEventListener('click', () => {
         currentQIndex = 0;
-        broadcast({ type: 'START_QUIZ', quiz: quizData });
-        startQuestion(currentQIndex);
+        broadcast({ type: 'START_QUIZ', quiz: quizData, qIndex: currentQIndex, question: quizData.questions[currentQIndex] });
+        showQuestionScreen(quizData.questions[currentQIndex], currentQIndex);
     });
-
-    function startQuestion(index) {
-        currentQIndex = index;
-        playerAnswers = {};
-        const q = quizData.questions[index];
-        broadcast({ type: 'NEXT_QUESTION', qIndex: index, question: q });
-        showQuestionScreen(q, index);
-    }
 
     function showQuestionScreen(q, index) {
         document.getElementById('screen-lobby').classList.add('hidden');
         document.getElementById('screen-leaderboard').classList.add('hidden');
         document.getElementById('screen-quiz').classList.remove('hidden');
         
-        document.getElementById('question-counter').innerText = `Q ${index + 1} / ${quizData.questions.length}`;
+        document.getElementById('question-counter').innerText = `Question ${index + 1} of ${quizData.questions.length}`;
         document.getElementById('question-text').innerText = q.text;
 
         const optContainer = document.getElementById('options-container');
@@ -409,7 +414,7 @@
             } else {
                 document.getElementById('screen-quiz').classList.add('hidden');
                 document.getElementById('screen-leaderboard').classList.remove('hidden');
-                document.getElementById('leaderboard-list').innerHTML = `<p>Waiting for others to answer...</p>`;
+                document.getElementById('leaderboard-list').innerHTML = `<p>Answer submitted! Waiting for other members...</p>`;
             }
         } else {
             conn.send({ type: 'ANSWER', player: playerKey, answerText: optText, isCorrect });
@@ -425,12 +430,12 @@
             const list = document.getElementById('player-list');
             list.innerHTML = '';
             Object.keys(data.scores).forEach(p => {
-                list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Ready</span></div>`;
+                list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span style="color: green; font-size: 0.85rem;">Joined</span></div>`;
             });
         } else if(data.type === 'START_QUIZ' || data.type === 'NEXT_QUESTION') {
             if(data.quiz) quizData = data.quiz;
             const q = data.question || quizData.questions[data.qIndex];
-            showQuestionScreen(q, data.qIndex !== undefined ? data.qIndex : currentQIndex);
+            showQuestionScreen(q, data.qIndex);
         } else if(data.type === 'SHOW_LEADERBOARD') {
             showLeaderboardScreen(data.scores, data.playerAnswers, false);
         }
@@ -462,7 +467,8 @@
                 currentQIndex++;
                 if(currentQIndex < quizData.questions.length) {
                     nextBtn.classList.add('hidden');
-                    startQuestion(currentQIndex);
+                    broadcast({ type: 'NEXT_QUESTION', qIndex: currentQIndex, question: quizData.questions[currentQIndex] });
+                    showQuestionScreen(quizData.questions[currentQIndex], currentQIndex);
                 } else {
                     nextBtn.innerText = 'Quiz Finished!';
                     nextBtn.disabled = true;
@@ -475,6 +481,7 @@
 </script>
 </body>
 </html>
+
 
     
 
