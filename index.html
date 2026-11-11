@@ -50,9 +50,9 @@
             background: #f0f0f0;
             color: #333333;
             border: none;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             width: auto;
@@ -64,7 +64,7 @@
             margin-bottom: 4px;
             color: #333333;
         }
-        input, textarea {
+        input {
             width: 100%;
             padding: 10px 12px;
             margin-bottom: 10px;
@@ -75,7 +75,7 @@
             background: #ffffff;
             color: #111111;
         }
-        input:focus, textarea:focus {
+        input:focus {
             border-color: #0084ff;
         }
         button {
@@ -125,6 +125,7 @@
             display: flex;
             align-items: center;
             width: 100%;
+            cursor: pointer;
         }
         .option-btn:hover {
             background: #e8e8ed;
@@ -169,13 +170,6 @@
             margin-right: 8px;
             display: inline-block;
         }
-        .custom-q-block {
-            background: #fafafa;
-            border: 1px solid #eaeaea;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
         .watermark {
             text-align: right;
             font-size: 11px;
@@ -188,17 +182,14 @@
 <body>
 
     <div class="container">
-        <!-- Screen 1: Welcome / Registration -->
+        <!-- Screen 1: Welcome / Registration (No Nickname here) -->
         <div id="screen-welcome" class="screen active">
             <div class="header-row">
                 <h1>gc quiz <span class="emoji-title">😋</span></h1>
             </div>
-            <label>Apna Naam:</label>
+            <label>Apna Naam (Tumhari Turn):</label>
             <input type="text" id="userName" placeholder="Pehle apna naam likho...">
             
-            <label>Apna IG/WhatsApp Nickname:</label>
-            <input type="text" id="userNickname" placeholder="Jaise: @sam_7261...">
-
             <label>Total GC Members Count (Max 20):</label>
             <input type="number" id="memberCount" placeholder="Jaise: 5, 10, 20..." min="2" max="20">
             
@@ -206,35 +197,21 @@
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 2: Member Names Setup -->
+        <!-- Screen 2: Member Names & Nicknames Setup -->
         <div id="screen-members" class="screen">
             <div class="header-row">
                 <button class="back-btn" onclick="showScreen('screen-welcome')">Back</button>
                 <h1>gc quiz</h1>
             </div>
-            <label>Baaki Members ke Naam aur Nicknames:</label>
+            <label>Baaki Members ke Naam aur IG/WA Nicknames:</label>
             <div id="memberInputsContainer" class="scroll-area"></div>
-            <button onclick="goToModeSelection()">Confirm Names</button>
+            <button onclick="startQuizDirectly()">Start Quiz</button>
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 3: Mode Selection -->
-        <div id="screen-mode" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-members')">Back</button>
-                <h1>gc quiz</h1>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <button onclick="startReadymadeQuiz()">Readymade Quiz</button>
-                <button onclick="startCustomQuizBuilder()" style="background-color: #444444;">Create Your Own Quiz</button>
-            </div>
-            <div class="watermark" style="margin-top: 30px;">Sam</div>
-        </div>
-
-        <!-- Screen 4: Quiz Playing (Pass-and-Play Turn) -->
+        <!-- Screen 3: Quiz Playing (Pass-and-Play Turn) -->
         <div id="screen-quiz" class="screen">
             <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-mode')">Back</button>
                 <h3 id="questionCounter" style="font-size: 13px; font-weight: 600; color: #666;"></h3>
             </div>
             <h5 id="currentPlayerTurn" style="font-size: 13px; color: #0084ff; font-weight: 700; margin-bottom: 6px;"></h5>
@@ -243,19 +220,7 @@
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 5: Custom Quiz Builder -->
-        <div id="screen-custom-builder" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-mode')">Back</button>
-                <h1>gc quiz</h1>
-            </div>
-            <label>Apne Questions aur Options Dalo (15 Boxes):</label>
-            <div id="customQuestionsContainer" class="scroll-area"></div>
-            <button onclick="saveCustomQuiz()">Save & Start Quiz</button>
-            <div class="watermark">Sam</div>
-        </div>
-
-        <!-- Screen 6: Scoreboard -->
+        <!-- Screen 4: Scoreboard -->
         <div id="screen-score" class="screen">
             <div class="header-row">
                 <h1>Scoreboard</h1>
@@ -270,7 +235,6 @@
     <script>
         let userData = {
             name: "",
-            nickname: "",
             totalCount: 0,
             members: [],
             pfps: {},
@@ -310,7 +274,6 @@
 
         function goToMembers() {
             const nameInput = document.getElementById('userName').value.trim();
-            const nickInput = document.getElementById('userNickname').value.trim();
             const countInput = parseInt(document.getElementById('memberCount').value);
 
             if (!nameInput) {
@@ -327,18 +290,27 @@
             }
 
             userData.name = nameInput;
-            userData.nickname = nickInput || nameInput;
             userData.totalCount = countInput;
-            userData.members = [{ name: userData.name, nickname: userData.nickname }];
 
             let container = document.getElementById('memberInputsContainer');
             container.innerHTML = '';
             
+            // Player 1 (Creator) ka nickname yhi mangwa lenge ya auto set kar denge, baaki ke liye count - 1 boxes
+            container.innerHTML += `
+                <div style="background: #f9f9fb; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
+                    <label style="font-size: 12px; color: #0084ff;">1. ${userData.name} (Tum)</label>
+                    <input type="text" id="hostNickname" placeholder="Apna IG/WA Nickname (Jaise: @sam)">
+                </div>
+            `;
+
             for (let i = 1; i < countInput; i++) {
                 container.innerHTML += `
-                    <div class="member-input-row">
-                        <input type="text" class="memberNameInput" placeholder="Member ${i + 1} Real Name">
-                        <input type="text" class="memberNickInput" placeholder="IG/WA Nickname">
+                    <div style="background: #f9f9fb; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
+                        <label style="font-size: 12px; color: #666;">Member ${i + 1}</label>
+                        <div class="member-input-row">
+                            <input type="text" class="memberNameInput" placeholder="Real Name">
+                            <input type="text" class="memberNickInput" placeholder="IG/WA Nickname">
+                        </div>
                     </div>
                 `;
             }
@@ -346,12 +318,17 @@
             showScreen('screen-members');
         }
 
-        function goToModeSelection() {
+        function startQuizDirectly() {
+            const hostNick = document.getElementById('hostNickname').value.trim();
             const nameInputs = document.querySelectorAll('.memberNameInput');
             const nickInputs = document.querySelectorAll('.memberNickInput');
-            let tempMembers = [{ name: userData.name, nickname: userData.nickname }];
-            let allFilled = true;
             
+            let tempMembers = [{ 
+                name: userData.name, 
+                nickname: hostNick || userData.name 
+            }];
+
+            let allFilled = true;
             for (let i = 0; i < nameInputs.length; i++) {
                 let val = nameInputs[i].value.trim();
                 let nickVal = nickInputs[i].value.trim();
@@ -377,67 +354,11 @@
                 userData.pfps[displayName] = animalEmojis[index % animalEmojis.length];
             });
 
-            showScreen('screen-mode');
-        }
-
-        function startReadymadeQuiz() {
             let memberKeys = userData.members.map(m => `${m.name} (${m.nickname})`);
             activeQuizQuestions = readymadeQuestions.map(q => ({
                 question: q,
                 options: memberKeys
             }));
-            beginQuizSession();
-        }
-
-        function startCustomQuizBuilder() {
-            let container = document.getElementById('customQuestionsContainer');
-            container.innerHTML = '';
-
-            for (let i = 1; i <= 15; i++) {
-                container.innerHTML += `
-                    <div class="custom-q-block">
-                        <label>Q${i}. Question:</label>
-                        <input type="text" class="custom-q-text" placeholder="Question ${i} likho...">
-                        <label>4 Options:</label>
-                        <input type="text" class="custom-opt-${i}-1" placeholder="Option 1">
-                        <input type="text" class="custom-opt-${i}-2" placeholder="Option 2">
-                        <input type="text" class="custom-opt-${i}-3" placeholder="Option 3">
-                        <input type="text" class="custom-opt-${i}-4" placeholder="Option 4">
-                    </div>
-                `;
-            }
-            showScreen('screen-custom-builder');
-        }
-
-        function saveCustomQuiz() {
-            activeQuizQuestions = [];
-            for (let i = 1; i <= 15; i++) {
-                let qElem = document.querySelector(`.custom-q-block:nth-child(${i}) .custom-q-text`);
-                let o1Elem = document.querySelector(`.custom-opt-${i}-1`);
-                let o2Elem = document.querySelector(`.custom-opt-${i}-2`);
-                let o3Elem = document.querySelector(`.custom-opt-${i}-3`);
-                let o4Elem = document.querySelector(`.custom-opt-${i}-4`);
-
-                if (qElem && o1Elem && o2Elem) {
-                    let qText = qElem.value.trim();
-                    let o1 = o1Elem.value.trim();
-                    let o2 = o2Elem.value.trim();
-                    let o3 = o3Elem ? o3Elem.value.trim() : "";
-                    let o4 = o4Elem ? o4Elem.value.trim() : "";
-
-                    if (qText && o1 && o2) {
-                        let opts = [o1, o2];
-                        if (o3) opts.push(o3);
-                        if (o4) opts.push(o4);
-                        activeQuizQuestions.push({ question: qText, options: opts });
-                    }
-                }
-            }
-
-            if (activeQuizQuestions.length === 0) {
-                alert("Kam se kam ek question aur uske 2 options toh bharo!");
-                return;
-            }
 
             beginQuizSession();
         }
@@ -503,14 +424,14 @@
             });
         }
 
-        function toggleAnsDetails(id) {
+        window.toggleAnsDetails = function(id) {
             let elem = document.getElementById(id);
             if (elem.style.display === 'block') {
                 elem.style.display = 'none';
             } else {
                 elem.style.display = 'block';
             }
-        }
+        };
 
         function showScoreboard() {
             showScreen('screen-score');
@@ -532,5 +453,40 @@
                         let item = memberAnswers[qKey];
                         choicesList += `<div><b>${item.question}</b><br><span style="color: #0084ff;">Ans: ${item.votedFor}</span></div>`;
                     });
+                }
+
+                list.innerHTML += `
+                    <div class="score-card">
+                        <div class="score-header">
+                            <div>
+                                <span class="pfp-avatar">${pfp}</span>
+                                <span>#${index + 1} ${memberKey}</span>
+                                ${detailsHTML}
+                            </div>
+                            <span style="font-weight: 600; color: #0084ff;">${score} votes</span>
+                        </div>
+                        <div id="ans-${index}" class="ans-details">
+                            ${choicesList}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function shareLink() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'gc quiz',
+                    text: 'gc quiz 😋',
+                    url: window.location.href,
+                }).catch(() => {});
+            } else {
+                prompt("gc quiz link copy kar lo:", window.location.href);
+            }
+        }
+    </script>
+</body>
+            </html>
+
            
 
