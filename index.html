@@ -12,9 +12,9 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background-color: #ffffff;
+            background-color: #f4f6f9;
             color: #111111;
-            padding: 12px;
+            padding: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,36 +22,42 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
             background: #ffffff;
-            padding: 18px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
             position: relative;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         h1 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             text-align: center;
             flex: 1;
+            color: #1a1a1a;
         }
         .emoji-title {
-            font-size: 24px;
+            font-size: 22px;
             display: inline-block;
             margin-left: 4px;
         }
         .back-btn {
-            background: #f0f0f0;
+            background: #f0f2f5;
             color: #333333;
             border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -60,50 +66,56 @@
         label {
             display: block;
             font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            color: #333333;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #444444;
         }
         input {
             width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            border: 1px solid #cccccc;
-            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            border: 1.5px solid #e1e4e8;
+            border-radius: 12px;
             font-size: 14px;
             outline: none;
-            background: #ffffff;
+            background: #fafbfc;
             color: #111111;
+            transition: all 0.2s;
         }
         input:focus {
-            border-color: #0084ff;
+            border-color: #007aff;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #0084ff;
+            padding: 14px;
+            background-color: #007aff;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 6px;
+            transition: opacity 0.2s, transform 0.1s;
         }
         button:active {
-            opacity: 0.8;
+            transform: scale(0.98);
+            opacity: 0.9;
         }
         .screen {
             display: none;
         }
         .screen.active {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
         }
         .scroll-area {
-            max-height: 42vh;
+            max-height: 40vh;
             overflow-y: auto;
-            padding-right: 4px;
-            margin-bottom: 8px;
+            padding-right: 2px;
+            margin-bottom: 10px;
         }
         .member-input-row {
             display: flex;
@@ -114,41 +126,45 @@
             margin-bottom: 0;
         }
         .option-btn {
-            background: #f5f5f7;
-            color: #111111;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 8px;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            border: 1.5px solid #e9ecef;
+            margin-bottom: 10px;
             text-align: left;
             font-weight: 500;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             width: 100%;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .option-btn:hover {
-            background: #e8e8ed;
+            background: #f1f3f5;
+            border-color: #ced4da;
         }
         .score-card {
-            background: #f9f9fb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            background: #f8f9fa;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
         }
         .score-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
         }
         .view-ans-btn {
-            background: #e0f0ff;
-            color: #0084ff;
+            background: #e7f1ff;
+            color: #007aff;
             border: none;
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             margin-left: 8px;
             cursor: pointer;
@@ -156,38 +172,38 @@
         }
         .ans-details {
             display: none;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #dddddd;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ced4da;
             font-size: 12px;
-            color: #444444;
+            color: #555555;
         }
         .ans-details div {
             margin-bottom: 6px;
         }
         .pfp-avatar {
-            font-size: 20px;
+            font-size: 18px;
             margin-right: 8px;
             display: inline-block;
         }
         .watermark {
             text-align: right;
             font-size: 11px;
-            color: #888888;
+            color: #adb5bd;
             font-weight: 500;
-            margin-top: 8px;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Screen 1: Welcome / Registration (No Nickname here) -->
+        <!-- Screen 1: Welcome / Registration -->
         <div id="screen-welcome" class="screen active">
             <div class="header-row">
                 <h1>gc quiz <span class="emoji-title">😋</span></h1>
             </div>
-            <label>Apna Naam (Tumhari Turn):</label>
+            <label>Apna Naam:</label>
             <input type="text" id="userName" placeholder="Pehle apna naam likho...">
             
             <label>Total GC Members Count (Max 20):</label>
@@ -197,7 +213,7 @@
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 2: Member Names & Nicknames Setup -->
+        <!-- Screen 2: Member Names Setup -->
         <div id="screen-members" class="screen">
             <div class="header-row">
                 <button class="back-btn" onclick="showScreen('screen-welcome')">Back</button>
@@ -205,44 +221,62 @@
             </div>
             <label>Baaki Members ke Naam aur IG/WA Nicknames:</label>
             <div id="memberInputsContainer" class="scroll-area"></div>
-            <button onclick="startQuizDirectly()">Start Quiz</button>
+            <button onclick="createOnlineRoom()">Create Online Room</button>
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 3: Quiz Playing (Pass-and-Play Turn) -->
+        <!-- Screen 3: Waiting / Lobby -->
+        <div id="screen-lobby" class="screen">
+            <div class="header-row">
+                <h1>Lobby ⏳</h1>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px; text-align: center;">Dosto ko link bhejo, sabke join hote hi host game start kar sakta hai!</p>
+            <div id="lobbyPlayersList" class="scroll-area" style="background: #f8f9fa; padding: 10px; border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 10px;"></div>
+            <button onclick="shareLink()" style="background-color: #34c759; margin-bottom: 8px;">Share Quiz Link</button>
+            <button id="startHostGameBtn" onclick="hostStartQuiz()" style="display:none; background-color: #007aff;">Start Game for Everyone</button>
+            <div class="watermark">Sam</div>
+        </div>
+
+        <!-- Screen 4: Quiz Playing -->
         <div id="screen-quiz" class="screen">
             <div class="header-row">
-                <h3 id="questionCounter" style="font-size: 13px; font-weight: 600; color: #666;"></h3>
+                <h3 id="questionCounter" style="font-size: 12px; font-weight: 600; color: #888888;"></h3>
             </div>
-            <h5 id="currentPlayerTurn" style="font-size: 13px; color: #0084ff; font-weight: 700; margin-bottom: 6px;"></h5>
-            <h2 id="questionTitle" style="font-size: 15px; font-weight: 600; margin-bottom: 10px;"></h2>
+            <h2 id="questionTitle" style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #1a1a1a; line-height: 1.4;"></h2>
             <div id="optionsContainer" class="scroll-area"></div>
             <div class="watermark">Sam</div>
         </div>
 
-        <!-- Screen 4: Scoreboard -->
+        <!-- Screen 5: Scoreboard -->
         <div id="screen-score" class="screen">
             <div class="header-row">
-                <h1>Scoreboard</h1>
+                <h1>Scoreboard 🏆</h1>
             </div>
             <div id="scoreboardList" class="scroll-area"></div>
-            <button onclick="shareLink()" style="background-color: #34c759; margin-bottom: 6px;">Share Quiz Link</button>
             <button onclick="location.reload()">Play Again</button>
             <div class="watermark">Sam</div>
         </div>
     </div>
 
-    <script>
-        let userData = {
-            name: "",
-            totalCount: 0,
-            members: [],
-            pfps: {},
-            allPlayersAnswers: {}
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdeMR-22wJYkkrA...", // Tera Firebase API Key
+            authDomain: "gc-quiz-e3b4d.firebaseapp.com",
+            databaseURL: "https://gc-quiz-e3b4d-default-rtdb.firebaseio.com",
+            projectId: "gc-quiz-e3b4d",
+            storageBucket: "gc-quiz-e3b4d.appspot.com",
+            messagingSenderId: "777606359466",
+            appId: "1:777606359466:web:94..."
         };
 
-        const animalEmojis = ['🦊', '🐼', '🐨', '🐰', '🐯', '🦁', '🐶', '🐱', '🐵', '🐧', '🦄', '🐸', '🐯', '🐼', '🐨', '🐰', '🦁', '🐶', '🐱', '🐵'];
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
+        const animalEmojis = ['🦊', '🐼', '🐨', '🐰', '🐯', '🦁', '🐶', '🐱', '🐵', '🐧', '🦄', '🐸', '🐯', '🐼', '🐨', '🐰', '🦁', '🐶', '🐱', '🐵'];
         const readymadeQuestions = [
             "Sab se bada aalsi kon hai?",
             "Sabse zada sorry kon bolta hai?",
@@ -261,22 +295,24 @@
             "Group mein sabse chupchap baith kar sabki baatein chupke se notice karne wala insaan kaun hai?"
         ];
 
-        let currentQuestionIndex = 0;
-        let currentPlayerIndex = 0;
-        let scores = {};
-        let activeQuizQuestions = [];
-        let tempAnswersForCurrentPlayer = {};
+        let myName = "";
+        let roomCode = new URLSearchParams(window.location.search).get("room");
+        let isHost = false;
+        let currentQIndex = 0;
+        let pfps = {};
+        let membersList = [];
+        let mySelectedAnswers = {};
 
-        function showScreen(screenId) {
+        window.showScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        function goToMembers() {
-            const nameInput = document.getElementById('userName').value.trim();
-            const countInput = parseInt(document.getElementById('memberCount').value);
+        window.goToMembers = function() {
+            myName = document.getElementById('userName').value.trim();
+            let countInput = parseInt(document.getElementById('memberCount').value);
 
-            if (!nameInput) {
+            if (!myName) {
                 alert("Pehle apna naam toh likh bhai!");
                 return;
             }
@@ -284,28 +320,17 @@
                 alert("Kam se kam 2 members hone chahiye!");
                 return;
             }
-            if (countInput > 20) {
-                alert("Maximum 20 members hi allow hain!");
-                return;
-            }
-
-            userData.name = nameInput;
-            userData.totalCount = countInput;
 
             let container = document.getElementById('memberInputsContainer');
-            container.innerHTML = '';
-            
-            // Player 1 (Creator) ka nickname yhi mangwa lenge ya auto set kar denge, baaki ke liye count - 1 boxes
-            container.innerHTML += `
-                <div style="background: #f9f9fb; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
-                    <label style="font-size: 12px; color: #0084ff;">1. ${userData.name} (Tum)</label>
-                    <input type="text" id="hostNickname" placeholder="Apna IG/WA Nickname (Jaise: @sam)">
+            container.innerHTML = `
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #e9ecef;">
+                    <label style="font-size: 12px; color: #007aff;">1. ${myName} (Host)</label>
+                    <input type="text" id="hostNick" placeholder="Apna IG/WA Nickname (Jaise: @sam)">
                 </div>
             `;
-
             for (let i = 1; i < countInput; i++) {
                 container.innerHTML += `
-                    <div style="background: #f9f9fb; padding: 8px; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #e9ecef;">
                         <label style="font-size: 12px; color: #666;">Member ${i + 1}</label>
                         <div class="member-input-row">
                             <input type="text" class="memberNameInput" placeholder="Real Name">
@@ -314,179 +339,167 @@
                     </div>
                 `;
             }
-
             showScreen('screen-members');
         }
 
-        function startQuizDirectly() {
-            const hostNick = document.getElementById('hostNickname').value.trim();
-            const nameInputs = document.querySelectorAll('.memberNameInput');
-            const nickInputs = document.querySelectorAll('.memberNickInput');
-            
-            let tempMembers = [{ 
-                name: userData.name, 
-                nickname: hostNick || userData.name 
-            }];
+        window.createOnlineRoom = function() {
+            let hostNick = document.getElementById('hostNick').value.trim() || myName;
+            let nameInputs = document.querySelectorAll('.memberNameInput');
+            let nickInputs = document.querySelectorAll('.memberNickInput');
 
-            let allFilled = true;
+            membersList = [{ name: myName, nickname: hostNick }];
             for (let i = 0; i < nameInputs.length; i++) {
-                let val = nameInputs[i].value.trim();
-                let nickVal = nickInputs[i].value.trim();
-                if (!val) {
-                    allFilled = false;
-                    break;
+                if(nameInputs[i].value.trim()) {
+                    membersList.push({
+                        name: nameInputs[i].value.trim(),
+                        nickname: nickInputs[i].value.trim() || nameInputs[i].value.trim()
+                    });
                 }
-                tempMembers.push({
-                    name: val,
-                    nickname: nickVal || val
-                });
             }
 
-            if (!allFilled) {
-                alert("Saare members ke naam bharo pehle!");
+            roomCode = 'room_' + Math.random().toString(36).substring(2, 8);
+            isHost = true;
+            
+            let initialScores = {};
+            membersList.forEach((m, idx) => {
+                let key = `${m.name} (${m.nickname})`;
+                initialScores[key] = 0;
+                pfps[key] = animalEmojis[idx % animalEmojis.length];
+            });
+
+            set(ref(db, 'rooms/' + roomCode), {
+                host: myName,
+                members: membersList,
+                pfps: pfps,
+                scores: initialScores,
+                status: 'waiting',
+                currentQuestion: 0
+            }).then(() => {
+                window.history.pushState({}, '', `?room=${roomCode}`);
+                listenToRoom();
+            });
+        }
+
+        function listenToRoom() {
+            showScreen('screen-lobby');
+            
+            onValue(ref(db, 'rooms/' + roomCode), (snapshot) => {
+                let data = snapshot.val();
+                if(!data) return;
+
+                membersList = data.members;
+                pfps = data.pfps || {};
+
+                let list = document.getElementById('lobbyPlayersList');
+                list.innerHTML = '<b style="font-size: 13px; color: #444;">Connected Players:</b><br><br>';
+                membersList.forEach((m, idx) => {
+                    let key = `${m.name} (${m.nickname})`;
+                    let p = pfps[key] || animalEmojis[idx % animalEmojis.length];
+                    list.innerHTML += `<div style="margin-bottom: 6px; font-size: 14px;">${p} <b>${m.name}</b> (${m.nickname})</div>`;
+                });
+
+                if (data.status === 'playing') {
+                    startQuizSession(data);
+                } else if (data.status === 'finished') {
+                    showScoreboard(data);
+                }
+
+                if (isHost && data.status === 'waiting') {
+                    document.getElementById('startHostGameBtn').style.display = 'block';
+                }
+            });
+        }
+
+        window.hostStartQuiz = function() {
+            update(ref(db, 'rooms/' + roomCode), {
+                status: 'playing',
+                currentQuestion: 0
+            });
+        }
+
+        function startQuizSession(data) {
+            showScreen('screen-quiz');
+            currentQIndex = data.currentQuestion || 0;
+
+            if (currentQIndex >= readymadeQuestions.length) {
+                if (isHost) {
+                    update(ref(db, 'rooms/' + roomCode), { status: 'finished' });
+                }
                 return;
             }
 
-            userData.members = tempMembers;
-
-            userData.members.forEach((m, index) => {
-                let displayName = `${m.name} (${m.nickname})`;
-                userData.pfps[displayName] = animalEmojis[index % animalEmojis.length];
-            });
-
-            let memberKeys = userData.members.map(m => `${m.name} (${m.nickname})`);
-            activeQuizQuestions = readymadeQuestions.map(q => ({
-                question: q,
-                options: memberKeys
-            }));
-
-            beginQuizSession();
-        }
-
-        function beginQuizSession() {
-            currentQuestionIndex = 0;
-            currentPlayerIndex = 0;
-            scores = {};
-            userData.allPlayersAnswers = {};
-            
-            userData.members.forEach(m => {
-                scores[`${m.name} (${m.nickname})`] = 0;
-            });
-            
-            tempAnswersForCurrentPlayer = {};
-            loadQuestion();
-            showScreen('screen-quiz');
-        }
-
-        function loadQuestion() {
-            let activeM = userData.members[currentPlayerIndex];
-            let activePlayerKey = `${activeM.name} (${activeM.nickname})`;
-            document.getElementById('currentPlayerTurn').innerText = `🎮 Turn: ${activeM.name} - [${activeM.nickname}]`;
-
-            if (currentQuestionIndex >= activeQuizQuestions.length) {
-                userData.allPlayersAnswers[activePlayerKey] = { ...tempAnswersForCurrentPlayer };
-                
-                currentPlayerIndex++;
-                if (currentPlayerIndex < userData.members.length) {
-                    currentQuestionIndex = 0;
-                    tempAnswersForCurrentPlayer = {};
-                    let nextM = userData.members[currentPlayerIndex];
-                    alert(`✅ Turn Finished!\n\nAb phone ${nextM.name} (${nextM.nickname}) ko do! 📱`);
-                    loadQuestion();
-                    return;
-                } else {
-                    showScoreboard();
-                    return;
-                }
-            }
-
-            let currentQ = activeQuizQuestions[currentQuestionIndex];
-            document.getElementById('questionCounter').innerText = `Q${currentQuestionIndex + 1}/${activeQuizQuestions.length}`;
-            document.getElementById('questionTitle').innerText = currentQ.question;
+            let qText = readymadeQuestions[currentQIndex];
+            document.getElementById('questionCounter').innerText = `Q${currentQIndex + 1}/${readymadeQuestions.length}`;
+            document.getElementById('questionTitle').innerText = qText;
 
             let optContainer = document.getElementById('optionsContainer');
             optContainer.innerHTML = '';
 
-            currentQ.options.forEach(option => {
+            membersList.forEach(m => {
+                let optionKey = `${m.name} (${m.nickname})`;
                 let btn = document.createElement('button');
                 btn.className = 'option-btn';
-                btn.innerHTML = `<span class="pfp-avatar">${userData.pfps[option] || '🐼'}</span> ${option}`;
+                btn.innerHTML = `<span class="pfp-avatar">${pfps[optionKey] || '🐼'}</span> ${optionKey}`;
                 btn.onclick = function() {
-                    scores[option] = (scores[option] || 0) + 1;
-                    tempAnswersForCurrentPlayer[`Q${currentQuestionIndex + 1}`] = {
-                        question: currentQ.question,
-                        votedFor: option
-                    };
-                    currentQuestionIndex++;
-                    loadQuestion();
+                    get(ref(db, `rooms/${roomCode}/scores/${optionKey}`)).then((snapshot) => {
+                        let currentScore = snapshot.val() || 0;
+                        let updates = {};
+                        updates[`scores/${optionKey}`] = currentScore + 1;
+                        updates[`currentQuestion`] = currentQIndex + 1;
+                        update(ref(db, 'rooms/' + roomCode), updates);
+                    });
                 };
                 optContainer.appendChild(btn);
             });
         }
 
-        window.toggleAnsDetails = function(id) {
-            let elem = document.getElementById(id);
-            if (elem.style.display === 'block') {
-                elem.style.display = 'none';
-            } else {
-                elem.style.display = 'block';
-            }
-        };
-
-        function showScoreboard() {
+        function showScoreboard(data) {
             showScreen('screen-score');
             let list = document.getElementById('scoreboardList');
             list.innerHTML = '';
 
+            let scores = data.scores || {};
             let sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
             sortedScores.forEach(([memberKey, score], index) => {
-                let pfp = userData.pfps[memberKey] || '🐼';
-                let memberAnswers = userData.allPlayersAnswers[memberKey];
-                
-                let detailsHTML = '';
-                let choicesList = '';
-
-                if (memberAnswers && Object.keys(memberAnswers).length > 0) {
-                    detailsHTML = `<button class="view-ans-btn" onclick="toggleAnsDetails('ans-${index}')">View Choices</button>`;
-                    Object.keys(memberAnswers).forEach(qKey => {
-                        let item = memberAnswers[qKey];
-                        choicesList += `<div><b>${item.question}</b><br><span style="color: #0084ff;">Ans: ${item.votedFor}</span></div>`;
-                    });
-                }
-
+                let p = pfps[memberKey] || '🐼';
                 list.innerHTML += `
                     <div class="score-card">
                         <div class="score-header">
                             <div>
-                                <span class="pfp-avatar">${pfp}</span>
+                                <span class="pfp-avatar">${p}</span>
                                 <span>#${index + 1} ${memberKey}</span>
-                                ${detailsHTML}
                             </div>
-                            <span style="font-weight: 600; color: #0084ff;">${score} votes</span>
-                        </div>
-                        <div id="ans-${index}" class="ans-details">
-                            ${choicesList}
+                            <span style="font-weight: 600; color: #007aff;">${score} votes</span>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function shareLink() {
+        window.shareLink = function() {
+            let shareUrl = window.location.href;
             if (navigator.share) {
-                navigator.share({
-                    title: 'gc quiz',
-                    text: 'gc quiz 😋',
-                    url: window.location.href,
-                }).catch(() => {});
+                navigator.share({ title: 'gc quiz', text: 'gc quiz 😋', url: shareUrl }).catch(() => {});
             } else {
-                prompt("gc quiz link copy kar lo:", window.location.href);
+                prompt("gc quiz link copy kar lo:", shareUrl);
             }
+        }
+
+        // Agar URL mein room code hai toh direct lobby mein join karega
+        if(roomCode) {
+            get(ref(db, 'rooms/' + roomCode)).then((snapshot) => {
+                if(snapshot.exists()) {
+                    let data = snapshot.val();
+                    membersList = data.members;
+                    pfps = data.pfps || {};
+                    listenToRoom();
+                } else {
+                    alert("Room nahi mila ya expire ho gaya!");
+                }
+            });
         }
     </script>
 </body>
-            </html>
-
-           
+</html>
 
