@@ -97,6 +97,9 @@
             color: #111;
             border: 1px solid #e0e0e0;
             margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
         }
         .option-btn:active {
             background: #eaeaea;
@@ -212,7 +215,6 @@
     let currentQIndex = 0;
     let scores = {};
     let playerAnswers = {};
-    let timerInterval = null;
 
     // Avatar Selection
     document.querySelectorAll('.avatar-option').forEach(el => {
@@ -295,7 +297,7 @@
             document.getElementById('screen-lobby').classList.remove('hidden');
             document.getElementById('room-code-display').innerText = `Room Code: ${id}`;
             document.getElementById('btn-start-quiz').classList.remove('hidden');
-            scores[myName + ' ' + selectedAvatar] = 0;
+            scores[`${selectedAvatar} ${myName}`] = 0;
             updatePlayerList();
         });
 
@@ -311,6 +313,10 @@
         Object.keys(scores).forEach(p => {
             list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Joined</span></div>`;
         });
+    }
+
+    function broadcast(data) {
+        connections.forEach(c => c.send(data));
     }
 
     // Join flow setup
@@ -349,16 +355,11 @@
             playerAnswers[data.player] = data.answerText;
             if(data.isCorrect) scores[data.player] = (scores[data.player] || 0) + 10;
             
-            // Check if all answered
             if(Object.keys(playerAnswers).length === Object.keys(scores).length) {
                 broadcast({ type: 'SHOW_LEADERBOARD', scores, playerAnswers });
                 showLeaderboardScreen(scores, playerAnswers, true);
             }
         }
-    }
-
-    function broadcast(data) {
-        connections.forEach(c => c.send(data));
     }
 
     // Start Quiz (Host)
@@ -426,9 +427,10 @@
             Object.keys(data.scores).forEach(p => {
                 list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Ready</span></div>`;
             });
-        } else if(data.type === 'NEXT_QUESTION') {
-            quizData.questions = [data.question]; // Simplified sync
-            showQuestionScreen(data.question, data.qIndex);
+        } else if(data.type === 'START_QUIZ' || data.type === 'NEXT_QUESTION') {
+            if(data.quiz) quizData = data.quiz;
+            const q = data.question || quizData.questions[data.qIndex];
+            showQuestionScreen(q, data.qIndex !== undefined ? data.qIndex : currentQIndex);
         } else if(data.type === 'SHOW_LEADERBOARD') {
             showLeaderboardScreen(data.scores, data.playerAnswers, false);
         }
@@ -442,7 +444,7 @@
         const list = document.getElementById('leaderboard-list');
         list.innerHTML = '';
         Object.keys(scrs).forEach(p => {
-            const chosenAns = ansMap[p] ? `Ans: ${ansMap[p]}` : 'No answer';
+            const chosenAns = ansMap && ansMap[p] ? `Ans: ${ansMap[p]}` : 'No answer';
             list.innerHTML += `
                 <div class="scoreboard-item">
                     <div>
@@ -472,7 +474,8 @@
     }
 </script>
 </body>
-    </html>
+</html>
+
     
 
     
