@@ -272,7 +272,7 @@
             name: "",
             nickname: "",
             totalCount: 0,
-            members: [], // {name, nickname}
+            members: [],
             pfps: {},
             allPlayersAnswers: {}
         };
@@ -526,9 +526,11 @@
                 let detailsHTML = '';
                 let choicesList = '';
 
-                // Sirf tabhi view choices dikhega jab player ne quiz complete kiya ho
                 if (memberAnswers && Object.keys(memberAnswers).length > 0) {
                     detailsHTML = `<button class="view-ans-btn" onclick="toggleAnsDetails('ans-${index}')">View Choices</button>`;
                     Object.keys(memberAnswers).forEach(qKey => {
                         let item = memberAnswers[qKey];
-                        choicesList += `<div><b>${item.question}</b
+                        choicesList += `<div><b>${item.question}</b><br><span style="color: #0084ff;">Ans: ${item.votedFor}</span></div>`;
+                    });
+           
+
