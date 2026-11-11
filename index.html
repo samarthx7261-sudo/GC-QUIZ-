@@ -227,6 +227,7 @@
                 <button class="back-btn" onclick="showScreen('screen-mode')">Back</button>
                 <h3 id="questionCounter" style="font-size: 13px; font-weight: 600; color: #666;"></h3>
             </div>
+            <h5 id="currentPlayerTurn" style="font-size: 12px; color: #0084ff; font-weight: 600; margin-bottom: 4px;"></h5>
             <h2 id="questionTitle" style="font-size: 15px; font-weight: 600; margin-bottom: 10px;"></h2>
             <div id="optionsContainer" class="scroll-area"></div>
             <div class="watermark">Sam</div>
@@ -262,7 +263,7 @@
             totalCount: 0,
             members: [],
             pfps: {},
-            userAnswers: {}
+            allPlayersAnswers: {}
         };
 
         const animalEmojis = ['🦊', '🐼', '🐨', '🐰', '🐯', '🦁', '🐶', '🐱', '🐵', '🐧', '🦄', '🐸'];
@@ -286,8 +287,10 @@
         ];
 
         let currentQuestionIndex = 0;
+        let currentPlayerIndex = 0;
         let scores = {};
         let activeQuizQuestions = [];
+        let tempAnswersForCurrentPlayer = {};
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -354,42 +357,7 @@
                 question: q,
                 options: userData.members.filter(m => m !== userData.name)
             }));
-            currentQuestionIndex = 0;
-            scores = {};
-            userData.userAnswers = {};
-            userData.members.forEach(m => scores[m] = 0);
-            loadQuestion();
-            showScreen('screen-quiz');
-        }
-
-        function loadQuestion() {
-            if (currentQuestionIndex >= activeQuizQuestions.length) {
-                showScoreboard();
-                return;
-            }
-
-            let currentQ = activeQuizQuestions[currentQuestionIndex];
-            document.getElementById('questionCounter').innerText = `Q${currentQuestionIndex + 1}/${activeQuizQuestions.length}`;
-            document.getElementById('questionTitle').innerText = currentQ.question;
-
-            let optContainer = document.getElementById('optionsContainer');
-            optContainer.innerHTML = '';
-
-            currentQ.options.forEach(option => {
-                let btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerHTML = `<span class="pfp-avatar">${userData.pfps[option] || '🐼'}</span> ${option}`;
-                btn.onclick = function() {
-                    scores[option] = (scores[option] || 0) + 1;
-                    userData.userAnswers[`Q${currentQuestionIndex + 1}`] = {
-                        question: currentQ.question,
-                        votedFor: option
-                    };
-                    currentQuestionIndex++;
-                    loadQuestion();
-                };
-                optContainer.appendChild(btn);
-            });
+            beginQuizSession();
         }
 
         function startCustomQuizBuilder() {
@@ -442,12 +410,64 @@
                 return;
             }
 
+            beginQuizSession();
+        }
+
+        function beginQuizSession() {
             currentQuestionIndex = 0;
+            currentPlayerIndex = 0;
             scores = {};
-            userData.userAnswers = {};
+            userData.allPlayersAnswers = {};
             userData.members.forEach(m => scores[m] = 0);
+            tempAnswersForCurrentPlayer = {};
+            
             loadQuestion();
             showScreen('screen-quiz');
+        }
+
+        function loadQuestion() {
+            let activePlayer = userData.members[currentPlayerIndex];
+            document.getElementById('currentPlayerTurn').innerText = `🎮 Turn: ${activePlayer} (${userData.pfps[activePlayer]})`;
+
+            if (currentQuestionIndex >= activeQuizQuestions.length) {
+                userData.allPlayersAnswers[activePlayer] = { ...tempAnswersForCurrentPlayer };
+                
+                currentPlayerIndex++;
+                if (currentPlayerIndex < userData.members.length) {
+                    currentQuestionIndex = 0;
+                    tempAnswersForCurrentPlayer = {};
+                    alert(`${userData.members[currentPlayerIndex]} ka turn aa gaya hai! Phone unko do.`);
+                    loadQuestion();
+                    return;
+                } else {
+                    showScoreboard();
+                    return;
+                }
+            }
+
+            let currentQ = activeQuizQuestions[currentQuestionIndex];
+            document.getElementById('questionCounter').innerText = `Q${currentQuestionIndex + 1}/${activeQuizQuestions.length}`;
+            document.getElementById('questionTitle').innerText = currentQ.question;
+
+            let optContainer = document.getElementById('optionsContainer');
+            optContainer.innerHTML = '';
+
+            let availableOpts = currentQ.options;
+            availableOpts.forEach(option => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="pfp-avatar">${userData.pfps[option] || '🐼'}</span> ${option}`;
+                btn.onclick = function() {
+                    scores[option] = (scores[option] || 0) + 1;
+                    tempAnswersForCurrentPlayer[`Q${currentQuestionIndex + 1}`] = {
+                        question: currentQ.question,
+                        votedFor: option
+                    };
+                    currentQuestionIndex++;
+                    loadQuestion();
+                };
+                optContainer.appendChild(btn);
+            });
         }
 
         function toggleAnsDetails(id) {
@@ -468,17 +488,16 @@
 
             sortedScores.forEach(([member, score], index) => {
                 let pfp = userData.pfps[member] || '🐼';
-                let isCurrentPlayer = (member === userData.name);
+                let memberAnswers = userData.allPlayersAnswers[member];
                 
                 let detailsHTML = '';
-                if (isCurrentPlayer && Object.keys(userData.userAnswers).length > 0) {
-                    detailsHTML = `<button class="view-ans-btn" onclick="toggleAnsDetails('ans-${index}')">View Choices</button>`;
-                }
-
                 let choicesList = '';
-                if (isCurrentPlayer) {
-                    Object.keys(userData.userAnswers).forEach(qKey => {
-                        let item = userData.userAnswers[qKey];
+
+                // Sirf tabhi view choices dikhega jab player ne quiz diya ho (answers recorded hon)
+                if (memberAnswers && Object.keys(memberAnswers).length > 0) {
+                    detailsHTML = `<button class="view-ans-btn" onclick="toggleAnsDetails('ans-${index}')">View Choices</button>`;
+                    Object.keys(memberAnswers).forEach(qKey => {
+                        let item = memberAnswers[qKey];
                         choicesList += `<div><b>${qKey}:</b> ${item.votedFor}</div>`;
                     });
                 }
@@ -494,7 +513,7 @@
                             <span style="font-weight: 600; color: #0084ff;">${score} votes</span>
                         </div>
                         <div id="ans-${index}" class="ans-details">
-                            ${choicesList || '<div>No choices recorded</div>'}
+                            ${choicesList}
                         </div>
                     </div>
                 `;
@@ -514,7 +533,5 @@
         }
     </script>
 </body>
-</html>
-
-        
-         
+                    </html>
+    
