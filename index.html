@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>gc quiz 😋</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -22,495 +23,456 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             background: #ffffff;
-            padding: 18px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            position: relative;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
+        h2, h3 {
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            color: #111;
         }
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            flex: 1;
-        }
-        .emoji-title {
-            font-size: 24px;
-            display: inline-block;
-            margin-left: 4px;
-        }
-        .back-btn {
-            background: #f0f0f0;
-            color: #333333;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            color: #333333;
-        }
-        input, textarea {
+        input, select {
             width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            border: 1px solid #cccccc;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 1rem;
             outline: none;
-            background: #ffffff;
-            color: #111111;
         }
-        input:focus, textarea:focus {
-            border-color: #0084ff;
+        input:focus, select:focus {
+            border-color: #007aff;
         }
         button {
             width: 100%;
             padding: 12px;
-            background-color: #0084ff;
+            background-color: #000000;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
         }
         button:active {
-            opacity: 0.8;
+            background-color: #333;
         }
-        .screen {
-            display: none;
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #111;
         }
-        .screen.active {
-            display: block;
+        .btn-secondary:active {
+            background-color: #e0e0e0;
         }
-        .scroll-area {
-            max-height: 42vh;
-            overflow-y: auto;
-            padding-right: 4px;
-            margin-bottom: 8px;
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .avatar-option {
+            padding: 10px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fafafa;
+        }
+        .avatar-option.selected {
+            border-color: #000;
+            background: #fff;
         }
         .option-btn {
-            background: #f5f5f7;
-            color: #111111;
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #f9f9f9;
+            color: #111;
             border: 1px solid #e0e0e0;
             margin-bottom: 8px;
-            text-align: left;
-            font-weight: 500;
-            padding: 12px;
-            border-radius: 8px;
+        }
+        .option-btn:active {
+            background: #eaeaea;
+        }
+        .header-flex {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            width: 100%;
+            margin-bottom: 15px;
         }
-        .option-btn:hover {
-            background: #e8e8ed;
+        .btn-back-small {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            background: #f0f0f0;
+            color: #111;
+            border-radius: 6px;
         }
-        .score-card {
-            background: #f9f9fb;
-            padding: 12px;
+        .scoreboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
             border-radius: 8px;
             margin-bottom: 8px;
         }
-        .score-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 500;
-        }
-        .view-ans-btn {
-            background: #e0f0ff;
-            color: #0084ff;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 8px;
-            cursor: pointer;
-            width: auto;
-        }
-        .ans-details {
-            display: none;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #dddddd;
-            font-size: 12px;
-            color: #444444;
-        }
-        .ans-details div {
-            margin-bottom: 4px;
-        }
-        .pfp-avatar {
-            font-size: 20px;
-            margin-right: 8px;
-            display: inline-block;
-        }
-        .custom-q-block {
-            background: #fafafa;
-            border: 1px solid #eaeaea;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        .watermark {
-            text-align: right;
-            font-size: 11px;
-            color: #888888;
-            font-weight: 500;
-            margin-top: 8px;
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Screen 1: Welcome / Registration -->
-        <div id="screen-welcome" class="screen active">
-            <div class="header-row">
-                <h1>gc quiz <span class="emoji-title">😋</span></h1>
-            </div>
-            <label>Apna Naam:</label>
-            <input type="text" id="userName" placeholder="Pehle apna naam likho...">
-            
-            <label>Total GC Members Count (Aapko mila kar):</label>
-            <input type="number" id="memberCount" placeholder="Jaise: 5, 6, 10..." min="2">
-            
-            <button onclick="goToMembers()">Next</button>
-            <div class="watermark">Sam</div>
+<div class="container">
+    <!-- Home Screen -->
+    <div id="screen-home">
+        <h2>gc quiz 😋</h2>
+        <input type="text" id="username" placeholder="Enter your name" maxlength="15">
+        
+        <label style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 6px;">Choose Avatar:</label>
+        <div class="avatar-grid" id="avatar-grid">
+            <div class="avatar-option selected" data-avatar="🐶">🐶</div>
+            <div class="avatar-option" data-avatar="🐱">🐱</div>
+            <div class="avatar-option" data-avatar="🐼">🐼</div>
+            <div class="avatar-option" data-avatar="🦊">🦊</div>
+            <div class="avatar-option" data-avatar="🦁">🦁</div>
+            <div class="avatar-option" data-avatar="🐰">🐰</div>
+            <div class="avatar-option" data-avatar="🐵">🐵</div>
+            <div class="avatar-option" data-avatar="🦄">🦄</div>
         </div>
 
-        <!-- Screen 2: Member Names Setup -->
-        <div id="screen-members" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-welcome')">Back</button>
-                <h1>gc quiz</h1>
-            </div>
-            <label>Baaki Members ke Naam Dalo:</label>
-            <div id="memberInputsContainer" class="scroll-area"></div>
-            <button onclick="goToModeSelection()">Confirm Names</button>
-            <div class="watermark">Sam</div>
-        </div>
-
-        <!-- Screen 3: Mode Selection -->
-        <div id="screen-mode" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-members')">Back</button>
-                <h1>gc quiz</h1>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <button onclick="startReadymadeQuiz()">Readymade Quiz</button>
-                <button onclick="startCustomQuizBuilder()" style="background-color: #444444;">Create Your Own Quiz</button>
-            </div>
-            <div class="watermark" style="margin-top: 30px;">Sam</div>
-        </div>
-
-        <!-- Screen 4: Quiz Playing -->
-        <div id="screen-quiz" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-mode')">Back</button>
-                <h3 id="questionCounter" style="font-size: 13px; font-weight: 600; color: #666;"></h3>
-            </div>
-            <h2 id="questionTitle" style="font-size: 15px; font-weight: 600; margin-bottom: 10px;"></h2>
-            <div id="optionsContainer" class="scroll-area"></div>
-            <div class="watermark">Sam</div>
-        </div>
-
-        <!-- Screen 5: Custom Quiz Builder -->
-        <div id="screen-custom-builder" class="screen">
-            <div class="header-row">
-                <button class="back-btn" onclick="showScreen('screen-mode')">Back</button>
-                <h1>gc quiz</h1>
-            </div>
-            <label>Apne Questions aur Options Dalo (15 Boxes):</label>
-            <div id="customQuestionsContainer" class="scroll-area"></div>
-            <button onclick="saveCustomQuiz()">Save & Start Quiz</button>
-            <div class="watermark">Sam</div>
-        </div>
-
-        <!-- Screen 6: Scoreboard -->
-        <div id="screen-score" class="screen">
-            <div class="header-row">
-                <h1>Scoreboard</h1>
-            </div>
-            <div id="scoreboardList" class="scroll-area"></div>
-            <button onclick="shareLink()" style="background-color: #34c759; margin-bottom: 6px;">Share Quiz Link</button>
-            <button onclick="location.reload()">Play Again</button>
-            <div class="watermark">Sam</div>
-        </div>
+        <button id="btn-join">Join Quiz</button>
+        <button id="btn-create-nav" class="btn-secondary">Host / Create Quiz</button>
     </div>
 
-    <script>
-        let userData = {
-            name: "",
-            totalCount: 0,
-            members: [],
-            pfps: {},
-            userAnswers: {}
-        };
+    <!-- Creator Screen -->
+    <div id="screen-creator" class="hidden">
+        <div class="header-flex">
+            <h2>Create Quiz</h2>
+            <button class="btn-back-small" id="btn-back-home">Back</button>
+        </div>
+        <input type="text" id="quiz-title" placeholder="Quiz Title">
+        <div id="questions-container"></div>
+        <button id="btn-add-q" class="btn-secondary">+ Add Question</button>
+        <button id="btn-publish">Publish Quiz</button>
+    </div>
 
-        const animalEmojis = ['🦊', '🐼', '🐨', '🐰', '🐯', '🦁', '🐶', '🐱', '🐵', '🐧', '🦄', '🐸'];
+    <!-- Join Screen -->
+    <div id="screen-join-code" class="hidden">
+        <div class="header-flex">
+            <h2>Join Room</h2>
+            <button class="btn-back-small" id="btn-back-home-2">Back</button>
+        </div>
+        <input type="text" id="room-code-input" placeholder="Enter Host Code">
+        <button id="btn-connect-host">Connect</button>
+    </div>
 
-        const readymadeQuestions = [
-            "Sab se bada aalsi kon hai?",
-            "Sabse zada sorry kon bolta hai?",
-            "Sabse zada bhookhad kon hai?",
-            "Late night tak kon jagta hai?",
-            "Main character energy kiske paas hai?",
-            "Sabse kind kon hai?",
-            "Multi-talented person kon hai?",
-            "Koi bhi plan ho, sabse pehle 'Main aa raha hoon' bolke sabse late kon pahunchta hai?",
-            "Bina kisi bataye achanak se offline ho jaane wala insaan kaun hai?",
-            "Agar kisi ko ek ghante ke liye phone na mile, toh sabse pehle panic attack kisko aayega?",
-            "Chat pe sabse zyada double texting ya spam karne wala kaun hai?",
-            "Kisi serious baat par bhi achanak se hasi chhupane wala insaan kaun hai?",
-            "Sabse mature kon hai?",
-            "Sabse zada bakwas kon karta hai?",
-            "Group mein sabse chupchap baith kar sabki baatein chupke se notice karne wala insaan kaun hai?"
-        ];
+    <!-- Lobby Screen -->
+    <div id="screen-lobby" class="hidden">
+        <h2>Waiting for Host...</h2>
+        <p id="room-code-display" style="margin-bottom: 12px; font-weight: bold;"></p>
+        <div id="player-list" style="margin-bottom: 15px; max-height: 150px; overflow-y: auto;"></div>
+        <button id="btn-start-quiz" class="hidden">Start Quiz</button>
+    </div>
 
-        let currentQuestionIndex = 0;
-        let scores = {};
-        let activeQuizQuestions = [];
+    <!-- Quiz Screen -->
+    <div id="screen-quiz" class="hidden">
+        <div class="header-flex">
+            <span id="question-counter" style="font-weight: 600; font-size: 0.9rem;"></span>
+            <span id="timer" style="font-weight: bold; color: #d9534f;"></span>
+        </div>
+        <h3 id="question-text"></h3>
+        <div id="options-container"></div>
+    </div>
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
+    <!-- Leaderboard Screen -->
+    <div id="screen-leaderboard" class="hidden">
+        <h2>Scoreboard</h2>
+        <div id="leaderboard-list" style="margin-bottom: 15px;"></div>
+        <button id="btn-next-question" class="hidden">Next Question</button>
+    </div>
+</div>
 
-        function goToMembers() {
-            const nameInput = document.getElementById('userName').value.trim();
-            const countInput = parseInt(document.getElementById('memberCount').value);
+<script>
+    let peer = null, conn = null, connections = [];
+    let isHost = false;
+    let myName = '';
+    let selectedAvatar = '🐶';
+    let quizData = { title: '', questions: [] };
+    let currentQIndex = 0;
+    let scores = {};
+    let playerAnswers = {};
+    let timerInterval = null;
 
-            if (!nameInput) {
-                alert("Pehle apna naam toh likh bhai!");
-                return;
-            }
-            if (isNaN(countInput) || countInput < 2) {
-                alert("Kam se kam 2 members hone chahiye!");
-                return;
-            }
+    // Avatar Selection
+    document.querySelectorAll('.avatar-option').forEach(el => {
+        el.addEventListener('click', (e) => {
+            document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+            e.target.classList.add('selected');
+            selectedAvatar = e.target.getAttribute('data-avatar');
+        });
+    });
 
-            userData.name = nameInput;
-            userData.totalCount = countInput;
-            userData.members = [nameInput];
+    // Navigation Back buttons
+    document.getElementById('btn-back-home').addEventListener('click', () => {
+        document.getElementById('screen-creator').classList.add('hidden');
+        document.getElementById('screen-home').classList.remove('hidden');
+    });
 
-            let container = document.getElementById('memberInputsContainer');
-            container.innerHTML = '';
+    document.getElementById('btn-back-home-2').addEventListener('click', () => {
+        document.getElementById('screen-join-code').classList.add('hidden');
+        document.getElementById('screen-home').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-create-nav').addEventListener('click', () => {
+        myName = document.getElementById('username').value.trim();
+        if(!myName) { alert('Please enter your name first'); return; }
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-creator').classList.remove('hidden');
+        if(document.getElementById('questions-container').children.length === 0) addQuestionField();
+    });
+
+    // Add Question fields dynamically
+    document.getElementById('btn-add-q').addEventListener('click', addQuestionField);
+
+    function addQuestionField() {
+        const container = document.getElementById('questions-container');
+        const qIndex = container.children.length;
+        const qDiv = document.createElement('div');
+        qDiv.style.marginBottom = '15px';
+        qDiv.style.borderTop = '1px solid #eee';
+        qDiv.style.paddingTop = '10px';
+        qDiv.innerHTML = `
+            <input type="text" placeholder="Question ${qIndex + 1}" class="q-text">
+            <input type="text" placeholder="Option A" class="opt-a">
+            <input type="text" placeholder="Option B" class="opt-b">
+            <input type="text" placeholder="Option C" class="opt-c">
+            <input type="text" placeholder="Option D" class="opt-d">
+            <select class="correct-opt">
+                <option value="0">Correct: Option A</option>
+                <option value="1">Correct: Option B</option>
+                <option value="2">Correct: Option C</option>
+                <option value="3">Correct: Option D</option>
+            </select>
+        `;
+        container.appendChild(qDiv);
+    }
+
+    // Publish / Host Quiz
+    document.getElementById('btn-publish').addEventListener('click', () => {
+        quizData.title = document.getElementById('quiz-title').value.trim() || 'GC Quiz';
+        const qDivs = document.querySelectorAll('#questions-container > div');
+        quizData.questions = [];
+        qDivs.forEach(div => {
+            quizData.questions.push({
+                text: div.querySelector('.q-text').value,
+                options: [
+                    div.querySelector('.opt-a').value,
+                    div.querySelector('.opt-b').value,
+                    div.querySelector('.opt-c').value,
+                    div.querySelector('.opt-d').value
+                ],
+                correct: parseInt(div.querySelector('.correct-opt').value)
+            });
+        });
+
+        if(quizData.questions.length === 0) { alert('Add at least one question'); return; }
+
+        isHost = true;
+        peer = new Peer();
+        peer.on('open', (id) => {
+            document.getElementById('screen-creator').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.remove('hidden');
+            document.getElementById('room-code-display').innerText = `Room Code: ${id}`;
+            document.getElementById('btn-start-quiz').classList.remove('hidden');
+            scores[myName + ' ' + selectedAvatar] = 0;
+            updatePlayerList();
+        });
+
+        peer.on('connection', (c) => {
+            connections.push(c);
+            c.on('data', (data) => handleHostData(data, c));
+        });
+    });
+
+    function updatePlayerList() {
+        const list = document.getElementById('player-list');
+        list.innerHTML = '';
+        Object.keys(scores).forEach(p => {
+            list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Joined</span></div>`;
+        });
+    }
+
+    // Join flow setup
+    document.getElementById('btn-join').addEventListener('click', () => {
+        myName = document.getElementById('username').value.trim();
+        if(!myName) { alert('Please enter your name'); return; }
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-join-code').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-connect-host').addEventListener('click', () => {
+        const hostId = document.getElementById('room-code-input').value.trim();
+        if(!hostId) { alert('Enter room code'); return; }
+
+        peer = new Peer();
+        peer.on('open', () => {
+            conn = peer.connect(hostId);
+            conn.on('open', () => {
+                conn.send({ type: 'JOIN', name: myName, avatar: selectedAvatar });
+                document.getElementById('screen-join-code').classList.add('hidden');
+                document.getElementById('screen-lobby').classList.remove('hidden');
+                document.getElementById('room-code-display').innerText = `Connected to Room`;
+            });
+            conn.on('data', handleClientData);
+        });
+    });
+
+    // Host Data Handler
+    function handleHostData(data, c) {
+        if(data.type === 'JOIN') {
+            c.playerName = `${data.avatar} ${data.name}`;
+            scores[c.playerName] = 0;
+            broadcast({ type: 'UPDATE_PLAYERS', scores });
+            updatePlayerList();
+        } else if(data.type === 'ANSWER') {
+            playerAnswers[data.player] = data.answerText;
+            if(data.isCorrect) scores[data.player] = (scores[data.player] || 0) + 10;
             
-            for (let i = 1; i < countInput; i++) {
-                container.innerHTML += `<input type="text" class="memberNameInput" placeholder="Member ${i + 1} ka naam">`;
+            // Check if all answered
+            if(Object.keys(playerAnswers).length === Object.keys(scores).length) {
+                broadcast({ type: 'SHOW_LEADERBOARD', scores, playerAnswers });
+                showLeaderboardScreen(scores, playerAnswers, true);
             }
-
-            showScreen('screen-members');
         }
+    }
 
-        function goToModeSelection() {
-            const inputs = document.querySelectorAll('.memberNameInput');
-            let tempMembers = [userData.name];
-            let allFilled = true;
-            
-            inputs.forEach(input => {
-                let val = input.value.trim();
-                if (!val) {
-                    allFilled = false;
-                } else {
-                    tempMembers.push(val);
-                }
-            });
+    function broadcast(data) {
+        connections.forEach(c => c.send(data));
+    }
 
-            if (!allFilled) {
-                alert("Saare members ke naam bharo pehle!");
-                return;
-            }
+    // Start Quiz (Host)
+    document.getElementById('btn-start-quiz').addEventListener('click', () => {
+        currentQIndex = 0;
+        broadcast({ type: 'START_QUIZ', quiz: quizData });
+        startQuestion(currentQIndex);
+    });
 
-            userData.members = tempMembers;
+    function startQuestion(index) {
+        currentQIndex = index;
+        playerAnswers = {};
+        const q = quizData.questions[index];
+        broadcast({ type: 'NEXT_QUESTION', qIndex: index, question: q });
+        showQuestionScreen(q, index);
+    }
 
-            userData.members.forEach((member, index) => {
-                userData.pfps[member] = animalEmojis[index % animalEmojis.length];
-            });
+    function showQuestionScreen(q, index) {
+        document.getElementById('screen-lobby').classList.add('hidden');
+        document.getElementById('screen-leaderboard').classList.add('hidden');
+        document.getElementById('screen-quiz').classList.remove('hidden');
+        
+        document.getElementById('question-counter').innerText = `Q ${index + 1} / ${quizData.questions.length}`;
+        document.getElementById('question-text').innerText = q.text;
 
-            showScreen('screen-mode');
-        }
+        const optContainer = document.getElementById('options-container');
+        optContainer.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            if(!opt) return;
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => submitAnswer(idx, opt, q.correct);
+            optContainer.appendChild(btn);
+        });
+    }
 
-        function startReadymadeQuiz() {
-            activeQuizQuestions = readymadeQuestions.map(q => ({
-                question: q,
-                options: userData.members.filter(m => m !== userData.name)
-            }));
-            currentQuestionIndex = 0;
-            scores = {};
-            userData.userAnswers = {};
-            userData.members.forEach(m => scores[m] = 0);
-            loadQuestion();
-            showScreen('screen-quiz');
-        }
-
-        function loadQuestion() {
-            if (currentQuestionIndex >= activeQuizQuestions.length) {
-                showScoreboard();
-                return;
-            }
-
-            let currentQ = activeQuizQuestions[currentQuestionIndex];
-            document.getElementById('questionCounter').innerText = `Q${currentQuestionIndex + 1}/${activeQuizQuestions.length}`;
-            document.getElementById('questionTitle').innerText = currentQ.question;
-
-            let optContainer = document.getElementById('optionsContainer');
-            optContainer.innerHTML = '';
-
-            currentQ.options.forEach(option => {
-                let btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerHTML = `<span class="pfp-avatar">${userData.pfps[option] || '🐼'}</span> ${option}`;
-                btn.onclick = function() {
-                    scores[option] = (scores[option] || 0) + 1;
-                    userData.userAnswers[`Q${currentQuestionIndex + 1}`] = {
-                        question: currentQ.question,
-                        votedFor: option
-                    };
-                    currentQuestionIndex++;
-                    loadQuestion();
-                };
-                optContainer.appendChild(btn);
-            });
-        }
-
-        function startCustomQuizBuilder() {
-            let container = document.getElementById('customQuestionsContainer');
-            container.innerHTML = '';
-
-            for (let i = 1; i <= 15; i++) {
-                container.innerHTML += `
-                    <div class="custom-q-block">
-                        <label>Q${i}. Question:</label>
-                        <input type="text" class="custom-q-text" placeholder="Question ${i} likho...">
-                        <label>4 Options:</label>
-                        <input type="text" class="custom-opt-${i}-1" placeholder="Option 1">
-                        <input type="text" class="custom-opt-${i}-2" placeholder="Option 2">
-                        <input type="text" class="custom-opt-${i}-3" placeholder="Option 3">
-                        <input type="text" class="custom-opt-${i}-4" placeholder="Option 4">
-                    </div>
-                `;
-            }
-            showScreen('screen-custom-builder');
-        }
-
-        function saveCustomQuiz() {
-            activeQuizQuestions = [];
-            for (let i = 1; i <= 15; i++) {
-                let qElem = document.querySelector(`.custom-q-block:nth-child(${i}) .custom-q-text`);
-                let o1Elem = document.querySelector(`.custom-opt-${i}-1`);
-                let o2Elem = document.querySelector(`.custom-opt-${i}-2`);
-                let o3Elem = document.querySelector(`.custom-opt-${i}-3`);
-                let o4Elem = document.querySelector(`.custom-opt-${i}-4`);
-
-                if (qElem && o1Elem && o2Elem) {
-                    let qText = qElem.value.trim();
-                    let o1 = o1Elem.value.trim();
-                    let o2 = o2Elem.value.trim();
-                    let o3 = o3Elem ? o3Elem.value.trim() : "";
-                    let o4 = o4Elem ? o4Elem.value.trim() : "";
-
-                    if (qText && o1 && o2) {
-                        let opts = [o1, o2];
-                        if (o3) opts.push(o3);
-                        if (o4) opts.push(o4);
-                        activeQuizQuestions.push({ question: qText, options: opts });
-                    }
-                }
-            }
-
-            if (activeQuizQuestions.length === 0) {
-                alert("Kam se kam ek question aur uske 2 options toh bharo!");
-                return;
-            }
-
-            currentQuestionIndex = 0;
-            scores = {};
-            userData.userAnswers = {};
-            userData.members.forEach(m => scores[m] = 0);
-            loadQuestion();
-            showScreen('screen-quiz');
-        }
-
-        function toggleAnsDetails(id) {
-            let elem = document.getElementById(id);
-            if (elem.style.display === 'block') {
-                elem.style.display = 'none';
+    function submitAnswer(idx, optText, correctIdx) {
+        const playerKey = `${selectedAvatar} ${myName}`;
+        const isCorrect = (idx === correctIdx);
+        
+        if(isHost) {
+            playerAnswers[playerKey] = optText;
+            if(isCorrect) scores[playerKey] = (scores[playerKey] || 0) + 10;
+            if(Object.keys(playerAnswers).length === Object.keys(scores).length) {
+                showLeaderboardScreen(scores, playerAnswers, true);
             } else {
-                elem.style.display = 'block';
+                document.getElementById('screen-quiz').classList.add('hidden');
+                document.getElementById('screen-leaderboard').classList.remove('hidden');
+                document.getElementById('leaderboard-list').innerHTML = `<p>Waiting for others to answer...</p>`;
             }
+        } else {
+            conn.send({ type: 'ANSWER', player: playerKey, answerText: optText, isCorrect });
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-leaderboard').classList.remove('hidden');
+            document.getElementById('leaderboard-list').innerHTML = `<p>Answer submitted! Waiting for results...</p>`;
         }
+    }
 
-        function showScoreboard() {
-            showScreen('screen-score');
-            let list = document.getElementById('scoreboardList');
+    // Client Data Handler
+    function handleClientData(data) {
+        if(data.type === 'UPDATE_PLAYERS') {
+            const list = document.getElementById('player-list');
             list.innerHTML = '';
-
-            let sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-
-            sortedScores.forEach(([member, score], index) => {
-                let pfp = userData.pfps[member] || '🐼';
-                let isCurrentPlayer = (member === userData.name);
-                
-                let detailsHTML = '';
-                if (isCurrentPlayer && Object.keys(userData.userAnswers).length > 0) {
-                    detailsHTML = `<button class="view-ans-btn" onclick="toggleAnsDetails('ans-${index}')">View Choices</button>`;
-                }
-
-                let choicesList = '';
-                if (isCurrentPlayer) {
-                    Object.keys(userData.userAnswers).forEach(qKey => {
-                        let item = userData.userAnswers[qKey];
-                        choicesList += `<div><b>${qKey}:</b> ${item.votedFor}</div>`;
-                    });
-                }
-
-                list.innerHTML += `
-                    <div class="score-card">
-                        <div class="score-header">
-                            <div>
-                                <span class="pfp-avatar">${pfp}</span>
-                                <span>#${index + 1} ${member}</span>
-                                ${detailsHTML}
-                            </div>
-                            <span style="font-weight: 600; color: #0084ff;">${score} votes</span>
-                        </div>
-                        <div id="ans-${index}" class="ans-details">
-                            ${choicesList || '<div>No choices recorded</div>'}
-                        </div>
-                    </div>
-                `;
+            Object.keys(data.scores).forEach(p => {
+                list.innerHTML += `<div class="scoreboard-item"><span>${p}</span><span>Ready</span></div>`;
             });
+        } else if(data.type === 'NEXT_QUESTION') {
+            quizData.questions = [data.question]; // Simplified sync
+            showQuestionScreen(data.question, data.qIndex);
+        } else if(data.type === 'SHOW_LEADERBOARD') {
+            showLeaderboardScreen(data.scores, data.playerAnswers, false);
         }
+    }
 
-        function shareLink() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'gc quiz 😋',
-                    text: 'Ye lo mera GC quiz ka link, aake score check karo!',
-                    url: window.location.href,
-                }).catch(() => {});
-            } else {
-                prompt("Yeh lo quiz link copy kar lo:", window.location.href);
-            }
+    function showLeaderboardScreen(scrs, ansMap, showNextBtn) {
+        document.getElementById('screen-quiz').classList.add('hidden');
+        document.getElementById('screen-lobby').classList.add('hidden');
+        document.getElementById('screen-leaderboard').classList.remove('hidden');
+
+        const list = document.getElementById('leaderboard-list');
+        list.innerHTML = '';
+        Object.keys(scrs).forEach(p => {
+            const chosenAns = ansMap[p] ? `Ans: ${ansMap[p]}` : 'No answer';
+            list.innerHTML += `
+                <div class="scoreboard-item">
+                    <div>
+                        <strong>${p}</strong><br>
+                        <small style="color: #666;">${chosenAns}</small>
+                    </div>
+                    <span><strong>${scrs[p]} pts</strong></span>
+                </div>`;
+        });
+
+        const nextBtn = document.getElementById('btn-next-question');
+        if(isHost && showNextBtn) {
+            nextBtn.classList.remove('hidden');
+            nextBtn.onclick = () => {
+                currentQIndex++;
+                if(currentQIndex < quizData.questions.length) {
+                    nextBtn.classList.add('hidden');
+                    startQuestion(currentQIndex);
+                } else {
+                    nextBtn.innerText = 'Quiz Finished!';
+                    nextBtn.disabled = true;
+                }
+            };
+        } else {
+            nextBtn.classList.add('hidden');
         }
-    </script>
+    }
+</script>
 </body>
-  </html>
-  
+    </html>
+    
+
+    
